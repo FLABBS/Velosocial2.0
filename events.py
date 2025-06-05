@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.exceptions import TelegramAPIError
 from database.db import get_connection
 
 router = Router()
@@ -86,14 +87,14 @@ async def handle_event_participants(message: Message, state: FSMContext) -> None
 
         data = await state.get_data()
 
-        # Создание группы (заглушка для примера)
+        # Создание группы
         try:
             chat = await message.bot.create_new_supergroup_chat(
                 title=f"Заезд: {data['description'][:20]}",
                 user_ids=[message.from_user.id]
             )
-        except Exception as e:
-            logger.error(f"Ошибка создания чата: {str(e)}")
+        except TelegramAPIError as e:
+            logger.error(f"Ошибка создания чата: {e}", exc_info=True)
             await message.answer("❌ Не удалось создать чат")
             await state.clear()
             return
@@ -101,8 +102,8 @@ async def handle_event_participants(message: Message, state: FSMContext) -> None
         try:
             invite = await message.bot.create_chat_invite_link(chat_id=chat.id)
             invite_link = invite.invite_link
-        except Exception as e:
-            logger.error(f"Ошибка получения ссылки на чат: {str(e)}")
+        except TelegramAPIError as e:
+            logger.error(f"Ошибка получения ссылки на чат: {e}", exc_info=True)
             await message.answer("❌ Не удалось создать ссылку на чат")
             await state.clear()
             return
