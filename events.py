@@ -22,7 +22,7 @@ class EventCreation(StatesGroup):
 
 
 @router.message(Command("create_event"))
-async def create_event(message: Message, state: FSMContext):
+async def create_event(message: Message, state: FSMContext) -> None:
     """Инициализация создания события"""
     try:
         await state.clear()
@@ -34,7 +34,7 @@ async def create_event(message: Message, state: FSMContext):
 
 
 @router.message(EventCreation.DESCRIPTION, F.text)
-async def handle_event_description(message: Message, state: FSMContext):
+async def handle_event_description(message: Message, state: FSMContext) -> None:
     """Обработка описания события"""
     try:
         await state.update_data(description=message.text)
@@ -45,7 +45,7 @@ async def handle_event_description(message: Message, state: FSMContext):
 
 
 @router.message(EventCreation.ROUTE, F.text)
-async def handle_event_route(message: Message, state: FSMContext):
+async def handle_event_route(message: Message, state: FSMContext) -> None:
     """Обработка маршрута"""
     try:
         await state.update_data(route=message.text)
@@ -56,7 +56,7 @@ async def handle_event_route(message: Message, state: FSMContext):
 
 
 @router.message(EventCreation.DATE, F.text)
-async def handle_event_date(message: Message, state: FSMContext):
+async def handle_event_date(message: Message, state: FSMContext) -> None:
     """Обработка даты и времени"""
     try:
         date_str = message.text
@@ -77,7 +77,7 @@ async def handle_event_date(message: Message, state: FSMContext):
 
 
 @router.message(EventCreation.PARTICIPANTS, F.text)
-async def handle_event_participants(message: Message, state: FSMContext):
+async def handle_event_participants(message: Message, state: FSMContext) -> None:
     """Финализация создания события"""
     try:
         max_participants = int(message.text)
@@ -140,7 +140,7 @@ async def handle_event_participants(message: Message, state: FSMContext):
 
 
 @router.message(Command("cancel"))
-async def cancel_event_creation(message: Message, state: FSMContext):
+async def cancel_event_creation(message: Message, state: FSMContext) -> None:
     """Отмена создания события"""
     await message.answer("❌ Создание события отменено")
     await state.clear()

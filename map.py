@@ -10,6 +10,7 @@ from database.db import get_connection
 from utils.yamaps import generate_map
 from utils.geocoder import address_to_coords
 from utils.filters import build_user_filters
+from typing import Tuple
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ ACTION_REFRESH = "refresh"
 
 
 @router.message(Command("find"))
-async def handle_find(message: Message):
+async def handle_find(message: Message) -> None:
     """Обработчик команды /find"""
     try:
         builder = InlineKeyboardBuilder()
@@ -33,7 +34,7 @@ async def handle_find(message: Message):
 
 
 @router.callback_query(F.data.startswith(f"{ACTION_SEARCH}:"))
-async def handle_search(callback: CallbackQuery, state: FSMContext):
+async def handle_search(callback: CallbackQuery, state: FSMContext) -> None:
     """Обработка выбора метода поиска"""
     try:
         method = callback.data.split(":")[1]
@@ -50,7 +51,7 @@ async def handle_search(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(F.location)
-async def handle_geo_location(message: Message, state: FSMContext):
+async def handle_geo_location(message: Message, state: FSMContext) -> None:
     """Обработка геолокации"""
     data = await state.get_data()
     if data.get("search_method") != "geo":
@@ -62,7 +63,7 @@ async def handle_geo_location(message: Message, state: FSMContext):
 
 
 @router.message(F.text)
-async def handle_text_address(message: Message, state: FSMContext):
+async def handle_text_address(message: Message, state: FSMContext) -> None:
     """Обработка текстового адреса"""
     data = await state.get_data()
     if data.get("search_method") != "address":
@@ -76,7 +77,12 @@ async def handle_text_address(message: Message, state: FSMContext):
     await process_search(message, state, *coords)
 
 
-async def process_search(message: Message, state: FSMContext, lat: float, lon: float):
+async def process_search(
+    message: Message,
+    state: FSMContext,
+    lat: float,
+    lon: float,
+) -> None:
     """Основная логика поиска"""
     try:
         data = await state.get_data()
@@ -120,7 +126,7 @@ async def process_search(message: Message, state: FSMContext, lat: float, lon: f
 
 
 @router.callback_query(F.data == ACTION_FILTERS)
-async def handle_filters(callback: CallbackQuery):
+async def handle_filters(callback: CallbackQuery) -> None:
     """Управление фильтрами"""
     try:
         builder = InlineKeyboardBuilder()
@@ -135,7 +141,7 @@ async def handle_filters(callback: CallbackQuery):
         logger.error(f"Ошибка в handle_filters: {str(e)}")
 
 
-def calculate_bbox(lat: float, lon: float, radius_km: int) -> tuple:
+def calculate_bbox(lat: float, lon: float, radius_km: int) -> Tuple[float, float, float, float]:
     """Рассчет границ поиска (без изменений)"""
     delta = radius_km / 111.0
     return (lat - delta, lat + delta, lon - delta, lon + delta)
