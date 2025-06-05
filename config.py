@@ -4,7 +4,7 @@ from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
 # --- Основные настройки ---
-TELEGRAM_TOKEN = "7544908894:AAFbDrA2u79O6ymTwdbY_UfXAzluDVmpCSk"  # Токен бота
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")  # Токен бота
 
 # --- Настройки бота (aiogram 3.7.0+) ---
 BOT_DEFAULT = DefaultBotProperties(
@@ -13,8 +13,8 @@ BOT_DEFAULT = DefaultBotProperties(
 )
 
 # --- Яндекс API ---
-YANDEX_MAPS_API_KEY = "a2662caf-b2d7-4f64-a308-b7dca6aa499f"       # Static API (карты)
-YANDEX_GEOCODER_API_KEY = "1e213321-3419-4509-bc92-2c7aef39a2d6"  # Геокодер
+YANDEX_MAPS_API_KEY = os.getenv("YANDEX_MAPS_API_KEY")       # Static API (карты)
+YANDEX_GEOCODER_API_KEY = os.getenv("YANDEX_GEOCODER_API_KEY")  # Геокодер
 
 # --- Настройки карты ---
 MAP_SETTINGS = {
