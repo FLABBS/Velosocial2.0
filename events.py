@@ -115,7 +115,8 @@ async def handle_event_participants(message: Message, state: FSMContext) -> None
             return
 
         # Сохранение в БД
-        async with get_connection() as conn:
+        conn = await get_connection()
+        async with conn:
             await conn.execute('''
                 INSERT INTO events (
                     creator_id, description, route,

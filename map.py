@@ -10,7 +10,7 @@ from database.db import get_connection
 from utils.yamaps import generate_map
 from utils.geocoder import address_to_coords
 from utils.filters import build_user_filters
-from typing import Tuple
+from typing import Tuple, cast
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -95,10 +95,12 @@ async def process_search(
         page_size = int(data.get("page_size", 5))
         offset = (page - 1) * page_size
 
-        async with get_connection() as conn:
+        conn = await get_connection()
+        async with conn:
             cursor = await conn.cursor()
             condition, params = build_user_filters(**filters)
-            bbox = calculate_bbox(lat, lon, MAP_SETTINGS["max_distance_km"])
+            radius_km = cast(int, MAP_SETTINGS["max_distance_km"])
+            bbox = calculate_bbox(lat, lon, radius_km)
 
             await cursor.execute(
                 f'''
