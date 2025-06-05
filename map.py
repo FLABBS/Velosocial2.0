@@ -38,7 +38,11 @@ async def handle_search(callback: CallbackQuery, state: FSMContext) -> None:
     """Обработка выбора метода поиска"""
     try:
         method = callback.data.split(":")[1]
-        await state.update_data(search_method=method)
+        await state.update_data(
+            search_method=method,
+            page=1,
+            page_size=5,
+        )
 
         if method == "geo":
             await callback.message.edit_text("📍 Отправьте вашу геолокацию (кнопка в меню ввода)")
@@ -87,19 +91,27 @@ async def process_search(
     try:
         data = await state.get_data()
         filters = data.get("filters", {})
+        page = int(data.get("page", 1))
+        page_size = int(data.get("page_size", 5))
+        offset = (page - 1) * page_size
 
         async with get_connection() as conn:
             cursor = await conn.cursor()
             condition, params = build_user_filters(**filters)
             bbox = calculate_bbox(lat, lon, MAP_SETTINGS["max_distance_km"])
 
-            await cursor.execute(f'''
+            await cursor.execute(
+                f'''
                 SELECT * FROM users
                 WHERE is_visible = 1
                 AND lat BETWEEN ? AND ?
                 AND lon BETWEEN ? AND ?
                 AND {condition}
-            ''', (*bbox, *params))
+                LIMIT ?
+                OFFSET ?
+                ''',
+                (*bbox, *params, page_size, offset),
+            )
 
             users = await cursor.fetchall()
 
@@ -108,7 +120,8 @@ async def process_search(
         map_url = generate_map(lat, lon, markers)
 
         response = f"🚴 Найдено: {len(users)} велосипедистов\n"
-        for idx, user in enumerate(users[:5], 1):
+        start_idx = offset + 1
+        for idx, user in enumerate(users, start=start_idx):
             response += f"{idx}. {user[2]} ({user[3]})\n"
 
         builder = InlineKeyboardBuilder()
