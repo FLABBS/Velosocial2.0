@@ -13,6 +13,10 @@ from database.db import get_connection
 router = Router()
 logger = logging.getLogger(__name__)
 
+# Ограничения для числа участников событий
+MIN_PARTICIPANTS = 2
+MAX_PARTICIPANTS = 50
+
 
 class EventCreation(StatesGroup):
     DESCRIPTION = State()
@@ -67,7 +71,9 @@ async def handle_event_date(message: Message, state: FSMContext) -> None:
             return
 
         await state.update_data(event_date=event_date.isoformat())
-        await message.answer("👥 Введите максимальное число участников (от 2 до 50):")
+        await message.answer(
+            f"👥 Введите максимальное число участников (от {MIN_PARTICIPANTS} до {MAX_PARTICIPANTS}):"
+        )
         await state.set_state(EventCreation.PARTICIPANTS)
 
     except ValueError:
@@ -81,7 +87,7 @@ async def handle_event_participants(message: Message, state: FSMContext) -> None
     """Финализация создания события"""
     try:
         max_participants = int(message.text)
-        if not (2 <= max_participants <= 50):
+        if not (MIN_PARTICIPANTS <= max_participants <= MAX_PARTICIPANTS):
             raise ValueError
 
         data = await state.get_data()
@@ -132,7 +138,9 @@ async def handle_event_participants(message: Message, state: FSMContext) -> None
         await state.clear()
 
     except ValueError:
-        await message.answer("❌ Введите число от 2 до 50!")
+        await message.answer(
+            f"❌ Введите число от {MIN_PARTICIPANTS} до {MAX_PARTICIPANTS}!"
+        )
     except Exception as e:
         logger.error(f"Ошибка в handle_event_participants: {str(e)}")
         await message.answer("❌ Ошибка создания события")
