@@ -45,7 +45,33 @@ GEOCODER_SETTINGS = {
 }
 
 # --- Логирование ---
+# Чтение уровня логирования из переменной окружения
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
+# Конфигурация для logging.config.dictConfig
 LOGGING = {
-    "level": "INFO",                # Уровень логирования (DEBUG/INFO/WARNING/ERROR)
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "standard",
+            "filename": os.path.join(os.path.dirname(__file__), "bot.log"),
+            "maxBytes": 1048576,  # 1 MB
+            "backupCount": 3,
+        },
+    },
+    "root": {
+        "level": LOG_LEVEL,
+        "handlers": ["console", "file"],
+    },
 }
