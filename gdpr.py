@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 async def cleanup_old_locations() -> None:
     """Асинхронная очистка устаревших геоданных пользователей согласно GDPR"""
     try:
-        async with get_connection() as conn:
+        async with await get_connection() as conn:
             # Рассчет времени устаревания
             ttl_hours = GDPR_SETTINGS["location_ttl_hours"]
             cutoff_time = datetime.now() - timedelta(hours=ttl_hours)

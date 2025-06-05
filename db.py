@@ -45,13 +45,3 @@ async def init_db() -> None:
 async def get_connection() -> aiosqlite.Connection:
     return await aiosqlite.connect(DB_PATH)
 
-async def cleanup_old_locations() -> None:
-    """Очищает устаревшие геоданные (GDPR)."""
-    async with await get_connection() as conn:
-        cursor = await conn.cursor()
-        await cursor.execute('''
-            UPDATE users 
-            SET lat = NULL, lon = NULL, is_visible = 0
-            WHERE last_updated < datetime('now', ?)
-        ''', (f"-{GDPR_SETTINGS['location_ttl_hours']} hours",))
-        await conn.commit()
