@@ -26,7 +26,7 @@ class ProfileStates(StatesGroup):
 
 
 @router.message(Command("profile"))
-async def profile_setup(message: Message, state: FSMContext):
+async def profile_setup(message: Message, state: FSMContext) -> None:
     """Инициализация создания профиля"""
     try:
         await state.clear()
@@ -38,7 +38,7 @@ async def profile_setup(message: Message, state: FSMContext):
 
 
 @router.message(ProfileStates.PHOTO, F.photo)
-async def handle_photo(message: Message, state: FSMContext):
+async def handle_photo(message: Message, state: FSMContext) -> None:
     """Обработка фотографии"""
     try:
         user = message.from_user
@@ -76,7 +76,7 @@ async def handle_photo(message: Message, state: FSMContext):
 
 
 @router.message(ProfileStates.PHOTO, Command("skip"))
-async def handle_skip_photo(message: Message, state: FSMContext):
+async def handle_skip_photo(message: Message, state: FSMContext) -> None:
     """Пропуск загрузки фото"""
     try:
         user = message.from_user
@@ -105,7 +105,7 @@ async def handle_skip_photo(message: Message, state: FSMContext):
 
 
 @router.callback_query(ProfileStates.BIKE_TYPE, F.data.in_({"road", "mtb", "city"}))
-async def handle_bike_type(callback: CallbackQuery, state: FSMContext):
+async def handle_bike_type(callback: CallbackQuery, state: FSMContext) -> None:
     """Обработка типа велосипеда"""
     try:
         await state.update_data(bike_type=callback.data)
@@ -132,7 +132,7 @@ async def handle_bike_type(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(ProfileStates.SKILL_LEVEL, F.data.in_({"beginner", "intermediate", "pro"}))
-async def handle_skill_level(callback: CallbackQuery, state: FSMContext):
+async def handle_skill_level(callback: CallbackQuery, state: FSMContext) -> None:
     """Обработка уровня подготовки"""
     try:
         await state.update_data(skill_level=callback.data)
@@ -144,7 +144,7 @@ async def handle_skill_level(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(ProfileStates.BIO, F.text)
-async def handle_bio(message: Message, state: FSMContext):
+async def handle_bio(message: Message, state: FSMContext) -> None:
     """Обработка описания профиля"""
     try:
         await state.update_data(bio=message.text[:200])
@@ -166,7 +166,7 @@ async def handle_bio(message: Message, state: FSMContext):
 
 
 @router.callback_query(ProfileStates.CONTACTS, F.data.in_({"telegram", "whatsapp"}))
-async def handle_contacts(callback: CallbackQuery, state: FSMContext):
+async def handle_contacts(callback: CallbackQuery, state: FSMContext) -> None:
     """Финализация создания профиля"""
     try:
         data = await state.get_data()

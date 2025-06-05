@@ -1,5 +1,6 @@
 # VelosocialBot/utils/geocoder.py
 import logging
+import asyncio
 import aiohttp
 from typing import Optional, Tuple
 from config import YANDEX_GEOCODER_API_KEY, GEOCODER_SETTINGS
