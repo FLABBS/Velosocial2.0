@@ -87,11 +87,25 @@ async def handle_event_participants(message: Message, state: FSMContext):
         data = await state.get_data()
 
         # Создание группы (заглушка для примера)
-        chat = await message.bot.create_chat(
-            title=f"Заезд: {data['description'][:20]}",
-            users=[message.from_user.id]
-        )
-        invite_link = await chat.export_invite_link()
+        try:
+            chat = await message.bot.create_new_supergroup_chat(
+                title=f"Заезд: {data['description'][:20]}",
+                user_ids=[message.from_user.id]
+            )
+        except Exception as e:
+            logger.error(f"Ошибка создания чата: {str(e)}")
+            await message.answer("❌ Не удалось создать чат")
+            await state.clear()
+            return
+
+        try:
+            invite = await message.bot.create_chat_invite_link(chat_id=chat.id)
+            invite_link = invite.invite_link
+        except Exception as e:
+            logger.error(f"Ошибка получения ссылки на чат: {str(e)}")
+            await message.answer("❌ Не удалось создать ссылку на чат")
+            await state.clear()
+            return
 
         # Сохранение в БД
         async with get_connection() as conn:
