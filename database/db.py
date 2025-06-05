@@ -5,6 +5,8 @@ from datetime import datetime
 from config import DATABASE, GDPR_SETTINGS
 
 DB_PATH = os.path.join(DATABASE["path"], DATABASE["name"])
+# Ensure the database directory exists
+os.makedirs(DATABASE["path"], exist_ok=True)
 
 async def init_db() -> None:
     """Инициализация таблиц в базе данных."""
