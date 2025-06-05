@@ -16,6 +16,15 @@ logger = logging.getLogger(__name__)
 PROFILES_DIR = Path(__file__).parent.parent / "profiles"
 os.makedirs(PROFILES_DIR, exist_ok=True)
 
+# Стандартные варианты типа велосипеда и максимальная длина BIO
+BIKE_TYPE_BUTTONS = [
+    ("Шоссе 🚴♂️", "road"),
+    ("MTB 🏔", "mtb"),
+    ("Городской 🏙", "city"),
+]
+
+BIO_MAX_LENGTH = 200
+
 
 class ProfileStates(StatesGroup):
     PHOTO = State()
@@ -58,12 +67,7 @@ async def handle_photo(message: Message, state: FSMContext):
 
         # Создаем клавиатуру для выбора типа велосипеда
         builder = InlineKeyboardBuilder()
-        buttons = [
-            ("Шоссе 🚴♂️", "road"),
-            ("MTB 🏔", "mtb"),
-            ("Городской 🏙", "city")
-        ]
-        for text, data in buttons:
+        for text, data in BIKE_TYPE_BUTTONS:
             builder.button(text=text, callback_data=data)
         builder.adjust(2, 1)
 
@@ -88,12 +92,7 @@ async def handle_skip_photo(message: Message, state: FSMContext):
 
         # Создаем клавиатуру для выбора типа велосипеда
         builder = InlineKeyboardBuilder()
-        buttons = [
-            ("Шоссе 🚴♂️", "road"),
-            ("MTB 🏔", "mtb"),
-            ("Городской 🏙", "city")
-        ]
-        for text, data in buttons:
+        for text, data in BIKE_TYPE_BUTTONS:
             builder.button(text=text, callback_data=data)
         builder.adjust(2, 1)
 
@@ -136,7 +135,9 @@ async def handle_skill_level(callback: CallbackQuery, state: FSMContext):
     """Обработка уровня подготовки"""
     try:
         await state.update_data(skill_level=callback.data)
-        await callback.message.edit_text("✏️ Напишите краткое описание о себе (максимум 200 символов):")
+        await callback.message.edit_text(
+            f"✏️ Напишите краткое описание о себе (максимум {BIO_MAX_LENGTH} символов):"
+        )
         await state.set_state(ProfileStates.BIO)
     except Exception as e:
         logger.error(f"Ошибка в handle_skill_level: {e}", exc_info=True)
@@ -147,7 +148,7 @@ async def handle_skill_level(callback: CallbackQuery, state: FSMContext):
 async def handle_bio(message: Message, state: FSMContext):
     """Обработка описания профиля"""
     try:
-        await state.update_data(bio=message.text[:200])
+        await state.update_data(bio=message.text[:BIO_MAX_LENGTH])
 
         # Создаем клавиатуру для выбора контактов
         builder = InlineKeyboardBuilder()

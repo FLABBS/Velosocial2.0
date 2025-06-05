@@ -1,6 +1,10 @@
 # VelosocialBot/utils/filters.py
 from typing import Optional, Tuple
 
+# Допустимые значения для фильтров
+BIKE_TYPES = {"road", "mtb", "city"}
+SKILL_LEVELS = {"beginner", "intermediate", "pro"}
+
 def build_user_filters(
     bike_type: Optional[str] = None,
     skill_level: Optional[str] = None
@@ -16,11 +20,11 @@ def build_user_filters(
     conditions = []
     params = []
 
-    if bike_type and bike_type in {'road', 'mtb', 'city'}:
+    if bike_type and bike_type in BIKE_TYPES:
         conditions.append("bike_type = ?")
         params.append(bike_type)
 
-    if skill_level and skill_level in {'beginner', 'intermediate', 'pro'}:
+    if skill_level and skill_level in SKILL_LEVELS:
         conditions.append("skill_level = ?")
         params.append(skill_level)
 
@@ -40,6 +44,6 @@ def validate_filter_params(
     :param skill_level: Уровень подготовки
     :return: True если параметры валидны
     """
-    valid_bike = bike_type in {None, 'road', 'mtb', 'city'}
-    valid_skill = skill_level in {None, 'beginner', 'intermediate', 'pro'}
+    valid_bike = bike_type in BIKE_TYPES.union({None})
+    valid_skill = skill_level in SKILL_LEVELS.union({None})
     return valid_bike and valid_skill
