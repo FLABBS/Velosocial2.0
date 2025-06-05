@@ -25,9 +25,18 @@ async def handle_find(message: Message):
     """Обработчик команды /find"""
     try:
         builder = InlineKeyboardBuilder()
-        builder.button(text="📍 По геолокации", callback_data=f"{ACTION_SEARCH}:geo")
-        builder.button(text="🏠 По адресу", callback_data=f"{ACTION_SEARCH}:address")
-        await message.answer("🔍 Выберите способ поиска:", reply_markup=builder.as_markup())
+        builder.button(
+            text="📍 По геолокации",
+            callback_data=f"{ACTION_SEARCH}:geo",
+        )
+        builder.button(
+            text="🏠 По адресу",
+            callback_data=f"{ACTION_SEARCH}:address",
+        )
+        await message.answer(
+            "🔍 Выберите способ поиска:",
+            reply_markup=builder.as_markup(),
+        )
     except Exception as e:
         logger.error(f"Ошибка в handle_find: {str(e)}")
 
@@ -40,9 +49,13 @@ async def handle_search(callback: CallbackQuery, state: FSMContext):
         await state.update_data(search_method=method)
 
         if method == "geo":
-            await callback.message.edit_text("📍 Отправьте вашу геолокацию (кнопка в меню ввода)")
+            await callback.message.edit_text(
+                "📍 Отправьте вашу геолокацию (кнопка в меню ввода)"
+            )
         elif method == "address":
-            await callback.message.edit_text("🏠 Введите адрес (пример: Москва, Парк Горького)")
+            await callback.message.edit_text(
+                "🏠 Введите адрес (пример: Москва, Парк Горького)"
+            )
 
         await callback.answer()
     except Exception as e:
@@ -76,7 +89,9 @@ async def handle_text_address(message: Message, state: FSMContext):
     await process_search(message, state, *coords)
 
 
-async def process_search(message: Message, state: FSMContext, lat: float, lon: float):
+async def process_search(
+    message: Message, state: FSMContext, lat: float, lon: float
+):
     """Основная логика поиска"""
     try:
         data = await state.get_data()
@@ -97,7 +112,10 @@ async def process_search(message: Message, state: FSMContext, lat: float, lon: f
 
             users = await cursor.fetchall()
 
-        markers = [f"{user[8]},{user[7]},{MAP_SETTINGS['others_icon']}" for user in users]
+        markers = [
+            f"{user[8]},{user[7]},{MAP_SETTINGS['others_icon']}"
+            for user in users
+        ]
         markers.append(f"{lon},{lat},{MAP_SETTINGS['user_icon']}")
         map_url = generate_map(lat, lon, markers)
 
@@ -110,10 +128,16 @@ async def process_search(message: Message, state: FSMContext, lat: float, lon: f
         builder.button(text="🔄 Обновить", callback_data=ACTION_REFRESH)
 
         if message.photo:
-            await message.edit_media(InputMediaPhoto(media=map_url, caption=response))
+            await message.edit_media(
+                InputMediaPhoto(media=map_url, caption=response)
+            )
             await message.edit_reply_markup(reply_markup=builder.as_markup())
         else:
-            await message.answer_photo(photo=map_url, caption=response, reply_markup=builder.as_markup())
+            await message.answer_photo(
+                photo=map_url,
+                caption=response,
+                reply_markup=builder.as_markup(),
+            )
 
     except Exception as e:
         logger.error(f"Ошибка в process_search: {str(e)}")
@@ -124,12 +148,20 @@ async def handle_filters(callback: CallbackQuery):
     """Управление фильтрами"""
     try:
         builder = InlineKeyboardBuilder()
-        builder.button(text="Тип велосипеда ▼", callback_data="filter:bike_type")
-        builder.button(text="Уровень подготовки ▼", callback_data="filter:skill_level")
+        builder.button(
+            text="Тип велосипеда ▼",
+            callback_data="filter:bike_type",
+        )
+        builder.button(
+            text="Уровень подготовки ▼",
+            callback_data="filter:skill_level",
+        )
         builder.button(text="✅ Применить", callback_data="filter:apply")
         builder.adjust(1, 1, 1)
 
-        await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
+        await callback.message.edit_reply_markup(
+            reply_markup=builder.as_markup()
+        )
         await callback.answer()
     except Exception as e:
         logger.error(f"Ошибка в handle_filters: {str(e)}")

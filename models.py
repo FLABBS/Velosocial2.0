@@ -21,7 +21,9 @@ class User:
         """Валидация данных (синхронная, не требует изменений)"""
         if self.bike_type and self.bike_type not in {'road', 'mtb', 'city'}:
             raise ValueError("Недопустимый тип велосипеда")
-        if self.skill_level and self.skill_level not in {'beginner', 'intermediate', 'pro'}:
+        if self.skill_level and self.skill_level not in {
+            'beginner', 'intermediate', 'pro'
+        }:
             raise ValueError("Недопустимый уровень подготовки")
 
 @dataclass

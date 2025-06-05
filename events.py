@@ -26,7 +26,10 @@ async def create_event(message: Message, state: FSMContext):
     """Инициализация создания события"""
     try:
         await state.clear()
-        await message.answer("📝 Введите описание события (например: 'Вечерний заезд по набережной'):")
+        await message.answer(
+            "📝 Введите описание события (например: "
+            "'Вечерний заезд по набережной'):"
+        )
         await state.set_state(EventCreation.DESCRIPTION)
     except Exception as e:
         logger.error(f"Ошибка в create_event: {str(e)}")
@@ -38,7 +41,10 @@ async def handle_event_description(message: Message, state: FSMContext):
     """Обработка описания события"""
     try:
         await state.update_data(description=message.text)
-        await message.answer("🗺️ Укажите маршрут (например: 'Москва, Парк Горького → Воробьевы горы'):")
+        await message.answer(
+            "🗺️ Укажите маршрут (например: "
+            "'Москва, Парк Горького → Воробьевы горы'):"
+        )
         await state.set_state(EventCreation.ROUTE)
     except Exception as e:
         logger.error(f"Ошибка в handle_event_description: {str(e)}")
@@ -49,7 +55,10 @@ async def handle_event_route(message: Message, state: FSMContext):
     """Обработка маршрута"""
     try:
         await state.update_data(route=message.text)
-        await message.answer("⏰ Введите дату и время в формате ДД.ММ.ГГГГ ЧЧ:ММ (например: 25.12.2024 18:30):")
+        await message.answer(
+            "⏰ Введите дату и время в формате ДД.ММ.ГГГГ ЧЧ:ММ (например: "
+            "25.12.2024 18:30):"
+        )
         await state.set_state(EventCreation.DATE)
     except Exception as e:
         logger.error(f"Ошибка в handle_event_route: {str(e)}")
@@ -67,11 +76,15 @@ async def handle_event_date(message: Message, state: FSMContext):
             return
 
         await state.update_data(event_date=event_date.isoformat())
-        await message.answer("👥 Введите максимальное число участников (от 2 до 50):")
+        await message.answer(
+            "👥 Введите максимальное число участников (от 2 до 50):"
+        )
         await state.set_state(EventCreation.PARTICIPANTS)
 
     except ValueError:
-        await message.answer("❌ Неверный формат даты! Используйте ДД.ММ.ГГГГ ЧЧ:ММ")
+        await message.answer(
+            "❌ Неверный формат даты! Используйте ДД.ММ.ГГГГ ЧЧ:ММ"
+        )
     except Exception as e:
         logger.error(f"Ошибка в handle_event_date: {str(e)}")
 

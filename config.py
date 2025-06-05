@@ -4,7 +4,8 @@ from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
 # --- Основные настройки ---
-TELEGRAM_TOKEN = "7544908894:AAFbDrA2u79O6ymTwdbY_UfXAzluDVmpCSk"  # Токен бота
+# Токен бота
+TELEGRAM_TOKEN = "7544908894:AAFbDrA2u79O6ymTwdbY_UfXAzluDVmpCSk"
 
 # --- Настройки бота (aiogram 3.7.0+) ---
 BOT_DEFAULT = DefaultBotProperties(
@@ -13,7 +14,8 @@ BOT_DEFAULT = DefaultBotProperties(
 )
 
 # --- Яндекс API ---
-YANDEX_MAPS_API_KEY = "a2662caf-b2d7-4f64-a308-b7dca6aa499f"       # Static API (карты)
+# Static API (карты)
+YANDEX_MAPS_API_KEY = "a2662caf-b2d7-4f64-a308-b7dca6aa499f"
 YANDEX_GEOCODER_API_KEY = "1e213321-3419-4509-bc92-2c7aef39a2d6"  # Геокодер
 
 # --- Настройки карты ---
@@ -34,7 +36,8 @@ GDPR_SETTINGS = {
 # --- Настройки базы данных ---
 DATABASE = {
     "name": "velosocial.db",        # Имя файла SQLite
-    "path": os.path.join(os.path.dirname(__file__), "database")  # Путь к папке
+    # Путь к папке
+    "path": os.path.join(os.path.dirname(__file__), "database")
 }
 
 # --- Настройки геокодера ---
@@ -46,6 +49,7 @@ GEOCODER_SETTINGS = {
 
 # --- Логирование ---
 LOGGING = {
-    "level": "INFO",                # Уровень логирования (DEBUG/INFO/WARNING/ERROR)
+    # Уровень логирования (DEBUG/INFO/WARNING/ERROR)
+    "level": "INFO",
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 }

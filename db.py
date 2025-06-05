@@ -16,7 +16,9 @@ async def init_db() -> None:
                 telegram_id INTEGER UNIQUE NOT NULL,
                 username TEXT,
                 bike_type TEXT CHECK(bike_type IN ('road', 'mtb', 'city')),
-                skill_level TEXT CHECK(skill_level IN ('beginner', 'intermediate', 'pro')),
+                skill_level TEXT CHECK(
+                    skill_level IN ('beginner', 'intermediate', 'pro')
+                ),
                 bio TEXT,
                 contacts TEXT,
                 lat REAL,

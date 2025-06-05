@@ -14,7 +14,11 @@ from handlers import common, profile, map, events
 from utils.gdpr import cleanup_old_locations
 
 # Загрузка текстовых шаблонов
-with open(Path(__file__).parent / "assets" / "texts.yml", "r", encoding="utf-8") as f:
+with open(
+    Path(__file__).parent / "assets" / "texts.yml",
+    "r",
+    encoding="utf-8",
+) as f:
     TEXTS = yaml.safe_load(f)
 
 # Настройка логгирования
