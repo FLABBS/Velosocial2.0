@@ -58,7 +58,7 @@ async def handle_geo_location(message: Message, state: FSMContext):
 
     lat = message.location.latitude
     lon = message.location.longitude
-    await process_search(message, state, lat, lon)
+    await process_search(message, state, lat, lon, page=1, page_size=5)
 
 
 @router.message(F.text)
@@ -73,11 +73,18 @@ async def handle_text_address(message: Message, state: FSMContext):
         await message.answer("❌ Адрес не найден")
         return
 
-    await process_search(message, state, *coords)
+    await process_search(message, state, *coords, page=1, page_size=5)
 
 
-async def process_search(message: Message, state: FSMContext, lat: float, lon: float):
-    """Основная логика поиска"""
+async def process_search(
+    message: Message,
+    state: FSMContext,
+    lat: float,
+    lon: float,
+    page: int = 1,
+    page_size: int = 5,
+) -> None:
+    """Основная логика поиска с поддержкой пагинации."""
     try:
         data = await state.get_data()
         filters = data.get("filters", {})
@@ -87,13 +94,16 @@ async def process_search(message: Message, state: FSMContext, lat: float, lon: f
             condition, params = build_user_filters(**filters)
             bbox = calculate_bbox(lat, lon, MAP_SETTINGS["max_distance_km"])
 
+            offset = (page - 1) * page_size
+
             await cursor.execute(f'''
                 SELECT * FROM users
                 WHERE is_visible = 1
                 AND lat BETWEEN ? AND ?
                 AND lon BETWEEN ? AND ?
                 AND {condition}
-            ''', (*bbox, *params))
+                LIMIT ? OFFSET ?
+            ''', (*bbox, *params, page_size, offset))
 
             users = await cursor.fetchall()
 
@@ -102,7 +112,7 @@ async def process_search(message: Message, state: FSMContext, lat: float, lon: f
         map_url = generate_map(lat, lon, markers)
 
         response = f"🚴 Найдено: {len(users)} велосипедистов\n"
-        for idx, user in enumerate(users[:5], 1):
+        for idx, user in enumerate(users, 1):
             response += f"{idx}. {user[2]} ({user[3]})\n"
 
         builder = InlineKeyboardBuilder()
