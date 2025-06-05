@@ -10,8 +10,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from config import TELEGRAM_TOKEN, BOT_DEFAULT, LOGGING, GDPR_SETTINGS
 from database.db import init_db
-from handlers import common, profile, map, events
-from utils.gdpr import cleanup_old_locations
+from .handlers import common, profile, map, events
+from .utils.gdpr import cleanup_old_locations
 
 # Загрузка текстовых шаблонов
 with open(Path(__file__).parent / "assets" / "texts.yml", "r", encoding="utf-8") as f:
