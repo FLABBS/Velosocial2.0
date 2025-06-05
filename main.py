@@ -1,6 +1,7 @@
 # VelosocialBot/main.py
 import asyncio
 import logging
+import logging.config
 from pathlib import Path
 import yaml
 
@@ -18,10 +19,7 @@ with open(Path(__file__).parent / "assets" / "texts.yml", "r", encoding="utf-8")
     TEXTS = yaml.safe_load(f)
 
 # Настройка логгирования
-logging.basicConfig(
-    format=LOGGING["format"],
-    level=LOGGING["level"]
-)
+logging.config.dictConfig(LOGGING)
 logger = logging.getLogger(__name__)
 
 async def main() -> None:

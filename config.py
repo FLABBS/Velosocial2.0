@@ -45,7 +45,32 @@ GEOCODER_SETTINGS = {
 }
 
 # --- Логирование ---
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOGGING = {
-    "level": "INFO",                # Уровень логирования (DEBUG/INFO/WARNING/ERROR)
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    "version": 1,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "level": LOG_LEVEL
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "default",
+            "level": LOG_LEVEL,
+            "filename": os.path.join(os.path.dirname(__file__), "velosocial.log"),
+            "maxBytes": 1048576,
+            "backupCount": 3,
+            "encoding": "utf-8"
+        }
+    },
+    "root": {
+        "level": LOG_LEVEL,
+        "handlers": ["console", "file"]
+    }
 }
