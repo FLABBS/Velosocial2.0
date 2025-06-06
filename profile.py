@@ -15,6 +15,7 @@ router = Router()
 logger = logging.getLogger(__name__)
 PROFILES_DIR = Path(__file__).parent.parent / "profiles"
 os.makedirs(PROFILES_DIR, exist_ok=True)
+MAX_PHOTO_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 class ProfileStates(StatesGroup):
@@ -49,11 +50,19 @@ async def handle_photo(message: Message, state: FSMContext) -> None:
 
         # Получаем фото с максимальным разрешением
         largest_photo = max(message.photo, key=lambda p: p.file_size)
+
+        # Проверка размера файла
+        if largest_photo.file_size and largest_photo.file_size > MAX_PHOTO_SIZE:
+            await message.answer(
+                "❌ Фото слишком большое. Максимальный размер 5 МБ."
+            )
+            return
+
         photo_file = await message.bot.get_file(largest_photo.file_id)
 
-        # Сохранение фото
+        # Сохранение фото асинхронно
         photo_path = PROFILES_DIR / f"{user.id}.jpg"
-        await photo_file.download_to_drive(str(photo_path))
+        await message.bot.download_file(photo_file.file_path, destination=photo_path)
         await state.update_data(photo=str(photo_path))
 
         # Создаем клавиатуру для выбора типа велосипеда
