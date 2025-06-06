@@ -7,9 +7,9 @@ from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from config import MAP_SETTINGS
 from database.db import get_connection
-from utils.yamaps import generate_map
-from utils.geocoder import address_to_coords
-from utils.filters import build_search_query
+from services.maps import generate_map
+from services.geocoder import address_to_coords
+from bot.utils.filters import build_search_query
 from typing import Tuple, cast
 
 router = Router()
