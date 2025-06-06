@@ -1,6 +1,7 @@
 # VelosocialBot/utils/yamaps.py
 from config import YANDEX_MAPS_API_KEY, MAP_SETTINGS
 
+
 def generate_map(lat: float, lon: float, markers: list[str]) -> str:
     """
     Генерирует URL статической карты Яндекс с метками.

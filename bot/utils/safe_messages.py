@@ -4,6 +4,7 @@ from aiogram.exceptions import TelegramAPIError
 
 logger = logging.getLogger(__name__)
 
+
 async def safe_answer(message: Message, *args, **kwargs) -> bool:
     """Safely send a reply to the user.
 

@@ -1,6 +1,7 @@
 # VelosocialBot/utils/filters.py
 from typing import Optional, Tuple
 
+
 def build_user_filters(
     bike_type: Optional[str] = None,
     skill_level: Optional[str] = None

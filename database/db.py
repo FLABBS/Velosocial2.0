@@ -6,6 +6,7 @@ from config import DATABASE, GDPR_SETTINGS
 
 DB_PATH = os.path.join(DATABASE["path"], DATABASE["name"])
 
+
 async def init_db() -> None:
     """Инициализация таблиц в базе данных."""
     async with aiosqlite.connect(DB_PATH) as conn:
@@ -16,7 +17,9 @@ async def init_db() -> None:
                 telegram_id INTEGER UNIQUE NOT NULL,
                 username TEXT,
                 bike_type TEXT CHECK(bike_type IN ('road', 'mtb', 'city')),
-                skill_level TEXT CHECK(skill_level IN ('beginner', 'intermediate', 'pro')),
+                skill_level TEXT CHECK(
+                    skill_level IN ('beginner', 'intermediate', 'pro')
+                ),
                 bio TEXT,
                 contacts TEXT,
                 lat REAL,
@@ -42,6 +45,6 @@ async def init_db() -> None:
         ''')
         await conn.commit()
 
+
 async def get_connection() -> aiosqlite.Connection:
     return await aiosqlite.connect(DB_PATH)
-
