@@ -6,6 +6,7 @@ from config import GDPR_SETTINGS
 
 logger = logging.getLogger(__name__)
 
+
 async def cleanup_old_locations() -> None:
     """Асинхронная очистка устаревших геоданных пользователей согласно GDPR"""
     try:

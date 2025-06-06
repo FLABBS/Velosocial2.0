@@ -13,7 +13,8 @@ BOT_DEFAULT = DefaultBotProperties(
 )
 
 # --- Яндекс API ---
-YANDEX_MAPS_API_KEY = os.getenv("YANDEX_MAPS_API_KEY")       # Static API (карты)
+YANDEX_MAPS_API_KEY = os.getenv(
+    "YANDEX_MAPS_API_KEY")       # Static API (карты)
 YANDEX_GEOCODER_API_KEY = os.getenv("YANDEX_GEOCODER_API_KEY")  # Геокодер
 
 # --- Настройки карты ---
