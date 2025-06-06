@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.exceptions import TelegramAPIError
+from database.db import get_connection
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -41,6 +42,22 @@ async def cmd_help(message: Message) -> None:
         )
     except TelegramAPIError as e:
         logger.error(f"Ошибка в команде /help: {e}")
+
+
+@router.message(Command("hide_me"))
+async def cmd_hide_me(message: Message) -> None:
+    """Скрывает геоданные пользователя."""
+    try:
+        conn = await get_connection()
+        async with conn:
+            await conn.execute(
+                "UPDATE users SET is_visible = 0 WHERE telegram_id = ?",
+                (message.from_user.id,),
+            )
+            await conn.commit()
+        await message.answer("Ваши геоданные скрыты")
+    except Exception as e:
+        logger.error(f"Ошибка в команде /hide_me: {e}")
 
 
 @router.errors()
