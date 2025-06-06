@@ -72,3 +72,10 @@ A typical workflow:
 
 Logs are written to `bot.log` as well as the console. Adjust the level with
 `LOG_LEVEL` if necessary.
+
+## Customizing messages
+
+All reply texts are defined directly inside the Python handler modules under
+`bot/handlers/`. If you want to change any messages shown to users,
+edit the corresponding strings in these files.
+
