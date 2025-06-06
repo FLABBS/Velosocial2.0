@@ -9,7 +9,7 @@ from config import MAP_SETTINGS
 from database.db import get_connection
 from utils.yamaps import generate_map
 from utils.geocoder import address_to_coords
-from utils.filters import build_user_filters
+from utils.filters import build_search_query
 from typing import Tuple, cast
 
 router = Router()
@@ -98,22 +98,17 @@ async def process_search(
         conn = await get_connection()
         async with conn:
             cursor = await conn.cursor()
-            condition, params = build_user_filters(**filters)
             radius_km = cast(int, MAP_SETTINGS["max_distance_km"])
             bbox = calculate_bbox(lat, lon, radius_km)
-
-            await cursor.execute(
-                f'''
-                SELECT * FROM users
-                WHERE is_visible = 1
-                AND lat BETWEEN ? AND ?
-                AND lon BETWEEN ? AND ?
-                AND {condition}
-                LIMIT ?
-                OFFSET ?
-                ''',
-                (*bbox, *params, page_size, offset),
+            query, q_params = build_search_query(
+                bbox,
+                bike_type=filters.get("bike_type"),
+                skill_level=filters.get("skill_level"),
+                limit=page_size,
+                offset=offset,
             )
+
+            await cursor.execute(query, q_params)
 
             users = await cursor.fetchall()
 
