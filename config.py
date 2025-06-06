@@ -4,7 +4,7 @@ from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
 # --- Основные настройки ---
-TELEGRAM_TOKEN = "7544908894:AAFbDrA2u79O6ymTwdbY_UfXAzluDVmpCSk"  # Токен бота
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")  # Токен бота
 
 # --- Настройки бота (aiogram 3.7.0+) ---
 BOT_DEFAULT = DefaultBotProperties(
@@ -13,8 +13,9 @@ BOT_DEFAULT = DefaultBotProperties(
 )
 
 # --- Яндекс API ---
-YANDEX_MAPS_API_KEY = "a2662caf-b2d7-4f64-a308-b7dca6aa499f"       # Static API (карты)
-YANDEX_GEOCODER_API_KEY = "1e213321-3419-4509-bc92-2c7aef39a2d6"  # Геокодер
+YANDEX_MAPS_API_KEY = os.getenv(
+    "YANDEX_MAPS_API_KEY")       # Static API (карты)
+YANDEX_GEOCODER_API_KEY = os.getenv("YANDEX_GEOCODER_API_KEY")  # Геокодер
 
 # --- Настройки карты ---
 MAP_SETTINGS = {
@@ -45,7 +46,33 @@ GEOCODER_SETTINGS = {
 }
 
 # --- Логирование ---
+# Чтение уровня логирования из переменной окружения
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
+# Конфигурация для logging.config.dictConfig
 LOGGING = {
-    "level": "INFO",                # Уровень логирования (DEBUG/INFO/WARNING/ERROR)
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "standard",
+            "filename": os.path.join(os.path.dirname(__file__), "bot.log"),
+            "maxBytes": 1048576,  # 1 MB
+            "backupCount": 3,
+        },
+    },
+    "root": {
+        "level": LOG_LEVEL,
+        "handlers": ["console", "file"],
+    },
 }
