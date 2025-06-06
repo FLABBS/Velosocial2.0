@@ -26,14 +26,18 @@ async def address_to_coords(address: str) -> Optional[Tuple[float, float]]:
                         "lang": GEOCODER_SETTINGS["lang"],
                         "results": GEOCODER_SETTINGS["results_limit"]
                     },
-                    timeout=aiohttp.ClientTimeout(total=GEOCODER_SETTINGS["timeout"])
+                    timeout=aiohttp.ClientTimeout(
+                        total=GEOCODER_SETTINGS["timeout"]
+                    )
             ) as response:
                 if response.status != 200:
                     logger.error(f"Geocoder API error: {response.status}")
                     return None
 
                 data = await response.json()
-                feature = data["response"]["GeoObjectCollection"]["featureMember"][0]
+                feature = data["response"]["GeoObjectCollection"][
+                    "featureMember"
+                ][0]
                 pos = feature["GeoObject"]["Point"]["pos"]
                 lon, lat = map(float, pos.split())
                 return (lat, lon)

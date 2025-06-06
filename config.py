@@ -13,7 +13,7 @@ BOT_DEFAULT = DefaultBotProperties(
 )
 
 # --- Яндекс API ---
-YANDEX_MAPS_API_KEY = os.getenv("YANDEX_MAPS_API_KEY")       # Static API (карты)
+YANDEX_MAPS_API_KEY = os.getenv("YANDEX_MAPS_API_KEY")  # Static API (карты)
 YANDEX_GEOCODER_API_KEY = os.getenv("YANDEX_GEOCODER_API_KEY")  # Геокодер
 
 # --- Настройки карты ---
@@ -34,7 +34,9 @@ GDPR_SETTINGS = {
 # --- Настройки базы данных ---
 DATABASE = {
     "name": "velosocial.db",        # Имя файла SQLite
-    "path": os.path.join(os.path.dirname(__file__), "database")  # Путь к папке
+    "path": os.path.join(
+        os.path.dirname(__file__), "database"
+    ),  # Путь к папке
 }
 
 # --- Настройки геокодера ---

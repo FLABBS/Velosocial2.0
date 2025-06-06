@@ -32,7 +32,13 @@ async def create_event(message: Message, state: FSMContext) -> None:
     """Инициализация создания события"""
     try:
         await state.clear()
-        await safe_answer(message, "📝 Введите описание события (например: 'Вечерний заезд по набережной'):")
+        await safe_answer(
+            message,
+            (
+                "📝 Введите описание события "
+                "(например: 'Вечерний заезд по набережной'):"
+            ),
+        )
         await state.set_state(EventCreation.DESCRIPTION)
     except Exception as e:
         logger.error(f"Ошибка в create_event: {str(e)}")
@@ -40,11 +46,19 @@ async def create_event(message: Message, state: FSMContext) -> None:
 
 
 @router.message(EventCreation.DESCRIPTION, F.text)
-async def handle_event_description(message: Message, state: FSMContext) -> None:
+async def handle_event_description(
+    message: Message, state: FSMContext
+) -> None:
     """Обработка описания события"""
     try:
         await state.update_data(description=message.text)
-        await safe_answer(message, "🗺️ Укажите маршрут (например: 'Москва, Парк Горького → Воробьевы горы'):")
+        await safe_answer(
+            message,
+            (
+                "🗺️ Укажите маршрут "
+                "(например: 'Москва, Парк Горького → Воробьевы горы'):"
+            ),
+        )
         await state.set_state(EventCreation.ROUTE)
     except Exception as e:
         logger.error(f"Ошибка в handle_event_description: {str(e)}")
@@ -55,7 +69,13 @@ async def handle_event_route(message: Message, state: FSMContext) -> None:
     """Обработка маршрута"""
     try:
         await state.update_data(route=message.text)
-        await safe_answer(message, "⏰ Введите дату и время в формате ДД.ММ.ГГГГ ЧЧ:ММ (например: 25.12.2024 18:30):")
+        await safe_answer(
+            message,
+            (
+                "⏰ Введите дату и время в формате ДД.ММ.ГГГГ ЧЧ:ММ "
+                "(например: 25.12.2024 18:30):"
+            ),
+        )
         await state.set_state(EventCreation.DATE)
     except Exception as e:
         logger.error(f"Ошибка в handle_event_route: {str(e)}")
@@ -75,18 +95,26 @@ async def handle_event_date(message: Message, state: FSMContext) -> None:
         await state.update_data(event_date=event_date.isoformat())
         await safe_answer(
             message,
-            f"👥 Введите максимальное число участников (от {MIN_PARTICIPANTS} до {MAX_PARTICIPANTS}):"
+            (
+                "👥 Введите максимальное число участников "
+                f"(от {MIN_PARTICIPANTS} до {MAX_PARTICIPANTS}):"
+            ),
         )
         await state.set_state(EventCreation.PARTICIPANTS)
 
     except ValueError:
-        await safe_answer(message, "❌ Неверный формат даты! Используйте ДД.ММ.ГГГГ ЧЧ:ММ")
+        await safe_answer(
+            message,
+            "❌ Неверный формат даты! Используйте ДД.ММ.ГГГГ ЧЧ:ММ",
+        )
     except Exception as e:
         logger.error(f"Ошибка в handle_event_date: {str(e)}")
 
 
 @router.message(EventCreation.PARTICIPANTS, F.text)
-async def handle_event_participants(message: Message, state: FSMContext) -> None:
+async def handle_event_participants(
+    message: Message, state: FSMContext
+) -> None:
     """Финализация создания события"""
     try:
         max_participants = int(message.text)

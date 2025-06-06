@@ -52,7 +52,10 @@ async def handle_photo(message: Message, state: FSMContext) -> None:
         largest_photo = max(message.photo, key=lambda p: p.file_size)
 
         # Проверка размера файла
-        if largest_photo.file_size and largest_photo.file_size > MAX_PHOTO_SIZE:
+        if (
+            largest_photo.file_size
+            and largest_photo.file_size > MAX_PHOTO_SIZE
+        ):
             await message.answer(
                 "❌ Фото слишком большое. Максимальный размер 5 МБ."
             )
@@ -62,7 +65,9 @@ async def handle_photo(message: Message, state: FSMContext) -> None:
 
         # Сохранение фото асинхронно
         photo_path = PROFILES_DIR / f"{user.id}.jpg"
-        await message.bot.download_file(photo_file.file_path, destination=photo_path)
+        await message.bot.download_file(
+            photo_file.file_path, destination=photo_path
+        )
         await state.update_data(photo=str(photo_path))
 
         # Создаем клавиатуру для выбора типа велосипеда
@@ -76,7 +81,10 @@ async def handle_photo(message: Message, state: FSMContext) -> None:
             builder.button(text=text, callback_data=data)
         builder.adjust(2, 1)
 
-        await message.answer("🚲 Выберите тип велосипеда:", reply_markup=builder.as_markup())
+        await message.answer(
+            "🚲 Выберите тип велосипеда:",
+            reply_markup=builder.as_markup(),
+        )
         await state.set_state(ProfileStates.BIKE_TYPE)
 
     except Exception as e:
@@ -106,14 +114,20 @@ async def handle_skip_photo(message: Message, state: FSMContext) -> None:
             builder.button(text=text, callback_data=data)
         builder.adjust(2, 1)
 
-        await message.answer("🚲 Выберите тип велосипеда:", reply_markup=builder.as_markup())
+        await message.answer(
+            "🚲 Выберите тип велосипеда:",
+            reply_markup=builder.as_markup(),
+        )
         await state.set_state(ProfileStates.BIKE_TYPE)
     except Exception as e:
         logger.error(f"Ошибка в handle_skip_photo: {e}", exc_info=True)
         await message.answer("⚠️ Ошибка при пропуске фото")
 
 
-@router.callback_query(ProfileStates.BIKE_TYPE, F.data.in_({"road", "mtb", "city"}))
+@router.callback_query(
+    ProfileStates.BIKE_TYPE,
+    F.data.in_({"road", "mtb", "city"}),
+)
 async def handle_bike_type(callback: CallbackQuery, state: FSMContext) -> None:
     """Обработка типа велосипеда"""
     try:
@@ -140,12 +154,19 @@ async def handle_bike_type(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer("⚠️ Ошибка выбора типа")
 
 
-@router.callback_query(ProfileStates.SKILL_LEVEL, F.data.in_({"beginner", "intermediate", "pro"}))
-async def handle_skill_level(callback: CallbackQuery, state: FSMContext) -> None:
+@router.callback_query(
+    ProfileStates.SKILL_LEVEL,
+    F.data.in_({"beginner", "intermediate", "pro"}),
+)
+async def handle_skill_level(
+    callback: CallbackQuery, state: FSMContext
+) -> None:
     """Обработка уровня подготовки"""
     try:
         await state.update_data(skill_level=callback.data)
-        await callback.message.edit_text("✏️ Напишите краткое описание о себе (максимум 200 символов):")
+        await callback.message.edit_text(
+            "✏️ Напишите краткое описание о себе (максимум 200 символов):"
+        )
         await state.set_state(ProfileStates.BIO)
     except Exception as e:
         logger.error(f"Ошибка в handle_skill_level: {e}", exc_info=True)
@@ -167,14 +188,20 @@ async def handle_bio(message: Message, state: FSMContext) -> None:
         for text, data in buttons:
             builder.button(text=text, callback_data=data)
 
-        await message.answer("📱 Выберите контакты для связи:", reply_markup=builder.as_markup())
+        await message.answer(
+            "📱 Выберите контакты для связи:",
+            reply_markup=builder.as_markup(),
+        )
         await state.set_state(ProfileStates.CONTACTS)
     except Exception as e:
         logger.error(f"Ошибка в handle_bio: {e}", exc_info=True)
         await message.answer("⚠️ Ошибка ввода описания")
 
 
-@router.callback_query(ProfileStates.CONTACTS, F.data.in_({"telegram", "whatsapp"}))
+@router.callback_query(
+    ProfileStates.CONTACTS,
+    F.data.in_({"telegram", "whatsapp"}),
+)
 async def handle_contacts(callback: CallbackQuery, state: FSMContext) -> None:
     """Финализация создания профиля"""
     try:
@@ -182,7 +209,13 @@ async def handle_contacts(callback: CallbackQuery, state: FSMContext) -> None:
         logger.debug(f"Данные для сохранения: {data}")
 
         # Проверка обязательных полей
-        required_fields = ["telegram_id", "username", "bike_type", "skill_level", "bio"]
+        required_fields = [
+            "telegram_id",
+            "username",
+            "bike_type",
+            "skill_level",
+            "bio",
+        ]
         for field in required_fields:
             if field not in data:
                 raise ValueError(f"Отсутствует поле: {field}")
