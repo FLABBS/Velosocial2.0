@@ -72,3 +72,17 @@ A typical workflow:
 
 Logs are written to `bot.log` as well as the console. Adjust the level with
 `LOG_LEVEL` if necessary.
+
+## Running tests
+
+Unit tests are located in the `tests` directory and use
+[pytest](https://docs.pytest.org/). After installing the project
+dependencies you can install `pytest` and run the suite:
+
+```bash
+pip install pytest
+pytest
+```
+
+The tests stub out external dependencies such as `aiogram` and database
+connections, so they do not require any Telegram tokens or API keys.
