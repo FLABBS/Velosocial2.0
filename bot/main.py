@@ -2,8 +2,6 @@
 import asyncio
 import logging
 import logging.config
-from pathlib import Path
-import yaml
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -13,14 +11,6 @@ from config import TELEGRAM_TOKEN, BOT_DEFAULT, LOGGING, GDPR_SETTINGS
 from database.db import init_db
 from .handlers import common, profile, map, events
 from .utils.gdpr import cleanup_old_locations
-
-# Загрузка текстовых шаблонов
-with open(
-    Path(__file__).resolve().parent.parent / "texts.yml",
-    "r",
-    encoding="utf-8",
-) as f:
-    TEXTS = yaml.safe_load(f)
 
 # Настройка логгирования через dictConfig
 logging.config.dictConfig(LOGGING)
