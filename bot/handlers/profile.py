@@ -9,7 +9,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from database.db import get_connection
+from database.db import get_connection, DB_PATH
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -198,6 +198,7 @@ async def handle_bio(message: Message, state: FSMContext) -> None:
                        F.data.in_({"telegram", "whatsapp"}))
 async def handle_contacts(callback: CallbackQuery, state: FSMContext) -> None:
     """Финализация создания профиля"""
+    data = {}
     try:
         data = await state.get_data()
         logger.debug(f"Данные для сохранения: {data}")
@@ -245,7 +246,13 @@ async def handle_contacts(callback: CallbackQuery, state: FSMContext) -> None:
         logger.error(f"Ошибка валидации: {e}", exc_info=True)
         await callback.message.answer(f"❌ {str(e)}")
     except Exception as e:
-        logger.error(f"Критическая ошибка: {e}", exc_info=True)
-        await callback.message.answer("❌ Ошибка сохранения профиля")
+        logger.error(
+            "Критическая ошибка: %s | DB_PATH: %s | state_data: %s",
+            e,
+            DB_PATH,
+            data,
+            exc_info=True,
+        )
+        await callback.message.answer(f"❌ Ошибка сохранения профиля: {e}")
     finally:
         await state.clear()
